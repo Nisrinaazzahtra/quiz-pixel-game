@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "question": "Apa perbedaan kata umum dan kata khusus?",
+    "options": [
+      "kata umum memiliki makna luas, sedangkan kata khusus lebih spesifik.",
+      "kata umum hanya digunakan dalam tulisan ilmiah.",
+      "kata khusus memiliki makna lebih luas daripada kata umum.",
+      "keduanya memiliki makna yang sama."
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": 2,
+    "question": "Mengapa penggunaan idiom perlu diperhatikan dalam tulisan ilmiah?",
+    "options": [
+      "karena idiom hanya boleh digunakan dalam percakapan.",
+      "karena idiom selalu memiliki makna yang sama dengan kata penyusunnya.",
+      "karena idiom bisa menimbulkan penafsiran yang berbeda jika tidak dijelaskan.",
+      "karena idiom membuat tulisan menjadi lebih singkat."
+    ],
+    "correctIndex": 2
+  },
+  {
+    "id": 3,
+    "question": "Manakah kalimat yang paling efektif?",
+    "options": [
+      "Para mahasiswa-mahasiswa sedang belajar.",
+      "Kepada mahasiswa diharapkan menaati aturan.",
+      "Mahasiswa sedang belajar di kelas.",
+      "Semua mahasiswa-mahasiswa sedang belajar di kelas."
+    ],
+    "correctIndex": 2
+  },
+  {
+    "id": 4,
+    "question": "Ciri kalimat efektif yang mengharuskan bentuk kata dalam perincian sejajar disebut apa?",
+    "options": [
+      "Kesepadanan",
+      "Kehematan",
+      "Kepaduan",
+      "Keparalelan"
+    ],
+    "correctIndex": 3
+  },
+  {
+    "id": 5,
+    "question": "Apa yang dimaksud dengan bahasa antikorupsi?",
+    "options": [
+      "Bahasa yang digunakan untuk menyindir orang lain.",
+      "Praktik komunikasi yang jelas, jujur, dan berdasarkan bukti.",
+      "Bahasa yang menggunakan istilah sulit.",
+      "Bahasa untuk menyembunyikan kesalahan."
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": 6,
+    "question": "Mengapa kata baku penting dalam karya ilmiah",
+    "options": [
+      "Agar tulisan menjadi lebih panjang.",
+      "Agar tulisan terlihat sulit.",
+      "Agar tulisan jelas, konsisten, dan mudah dipahami.",
+      "Agar pembaca merasa bingung."
+    ],
+    "correctIndex": 2
+  },
+  {
+    "id": 7,
+    "question": "Apa ciri utama paragraf ilmiah?",
+    "options": [
+      "Penuh opini dan perasaan penulis.",
+      "Objektif, logis, dan berdasarkan fakta.",
+      "Bahasanya tidak baku dan santai.",
+      "Isinya hanya cerita khayalan."
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": 8,
+    "question": "Paragraf yang gagasan utamanya ada di awal paragraf disebut...",
+    "options": [
+      "Paragraf deduktif",
+      "Paragraf induktif",
+      "Paragraf ineratif",
+      "Paragraf campuran"
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": 9,
+    "question": "Latar belakang,Rumusan masalah,Tujuan penelitian,Manfaat penelitian. Bagian-bagian tersebut biasanya dapat ditemukan pada bab...",
+    "options": [
+      "Pendahuluan.",
+      "Tinjauan Pustaka.",
+      "Metode Penelitian.",
+      "Pembahasan"
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": 10,
+    "question": "Dalam penulisan karya ilmiah, daftar pustaka disusun dengan tujuan untuk",
+    "options": [
+      "Menambah jumlah halaman agar terlihat tebal.",
+      "Menunjukkan sumber referensi atau rujukan yang digunakan oleh penulis.",
+      "Memenuhi syarat administratif dari penerbit jurnal.",
+      "Menyimpulkan hasil penelitian secara keseluruhan."
+    ],
+    "correctIndex": 1
+  }
+]

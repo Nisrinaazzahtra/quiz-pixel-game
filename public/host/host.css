@@ -1,0 +1,549 @@
+/* Host CSS - Landscape Optimized */
+@import url('/css/style.css');
+
+body {
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+/* Landscape Container */
+.host-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Area */
+.host-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.player-count-badge {
+  background: rgba(26, 42, 70, 0.9);
+  color: #ffffff;
+  padding: 10px 18px;
+  border: 3px solid #000;
+  font-size: 14px;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.waiting-banner {
+  background: #1b386b;
+  color: #ffffff;
+  padding: 10px 32px;
+  border: 3px solid #000;
+  border-radius: 20px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.code-box {
+  background: #dfe6e9;
+  border: 4px solid #000;
+  padding: 12px 36px;
+  font-size: 32px;
+  letter-spacing: 6px;
+  color: #1a1a1a;
+  box-shadow: 4px 4px 0 #000;
+  margin: 0 auto 24px auto;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Grid Pemain di Waiting Room (Maks 30) */
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 16px;
+  flex: 1;
+  align-content: start;
+  margin-bottom: 24px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(20, 28, 45, 0.82);
+  border: 4px solid #000;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.player-card {
+  background: #ffffff;
+  border: 3px solid #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 3px 3px 0 #000;
+  overflow: hidden;
+  animation: popIn 0.3s ease;
+}
+
+.player-card .avatar-box {
+  width: 100%;
+  height: 100px;
+  background: #b8e2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.player-card .avatar-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.player-card .name-badge {
+  width: 100%;
+  background: #739d1b;
+  color: #ffffff;
+  text-align: center;
+  font-size: 11px;
+  padding: 6px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-top: 2px solid #000;
+}
+
+.waiting-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.waiting-text {
+  font-size: 16px;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000;
+  letter-spacing: 2px;
+  animation: blinkText 1.5s infinite;
+}
+
+@keyframes blinkText {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ------------------------------------------------------------- */
+/* IN-GAME DASHBOARD (Referensi 3) */
+/* ------------------------------------------------------------- */
+.game-header-title {
+  color: #ffffff;
+  font-size: 20px;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 16px;
+}
+
+.in-game-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+  flex: 1;
+  min-height: calc(100vh - 110px);
+}
+
+/* Papan Skor Table */
+.scoreboard-box {
+  background: rgba(0, 0, 0, 0.45);
+  border: 4px solid #000;
+  padding: 16px;
+  box-shadow: 4px 4px 0 #000;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 110px);
+}
+
+.scoreboard-table-header {
+  display: flex;
+  justify-content: space-between;
+  color: #ffffff;
+  font-size: 14px;
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 12px;
+  padding: 0 10px;
+}
+
+.scoreboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 6px;
+}
+
+.score-row {
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid #000;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.score-row.dead {
+  background: rgba(180, 180, 180, 0.7);
+  opacity: 0.75;
+}
+
+.score-row-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.score-row-avatar {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+/* Koreksi Essay Box (Sesuai Mockup Gambar 2) */
+.essay-panel {
+  background: rgba(235, 240, 245, 0.94);
+  border: 4px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 110px); /* Diperpanjang ke bawah penuh agar mudah membaca essay panjang */
+}
+
+.essay-header {
+  font-size: 13px;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.essay-pills-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+}
+
+.essay-pill {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  padding: 5px 8px;
+  background: #dfe6e9;
+  border: 2px solid #000;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.essay-pill.active {
+  background: #f1c40f;
+  font-weight: bold;
+}
+
+.essay-content-box {
+  flex: 1;
+  background: #ffffff;
+  border: 3px solid #000;
+  padding: 16px;
+  overflow-y: auto;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tombol Merah dan Biru Cyan di Bagian Bawah (Sesuai Desain Gambar 2) */
+.essay-bottom-actions {
+  display: flex;
+  gap: 16px;
+  height: 54px;
+}
+
+.essay-btn-reject {
+  flex: 1;
+  background: #e74c3c;
+  color: #ffffff;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+}
+
+.essay-btn-approve {
+  flex: 1;
+  background: #4de1ec; /* Cyan/Light Blue persis seperti di gambar 2 */
+  color: #1a1a1a;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: bold;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+}
+
+.essay-btn-reject:hover:not(:disabled),
+.essay-btn-approve:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.essay-btn-reject:active:not(:disabled),
+.essay-btn-approve:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.essay-btn-reject:disabled,
+.essay-btn-approve:disabled {
+  filter: grayscale(1);
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.essay-item {
+  border-bottom: 2px dotted #888;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.essay-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.essay-author {
+  font-size: 11px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.essay-text {
+  font-family: var(--font-silk);
+  font-size: 13px;
+  line-height: 1.6;
+  background: #fdfae7;
+  padding: 8px 10px;
+  border-left: 4px solid #f1c40f;
+  margin-bottom: 10px;
+}
+
+.essay-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ------------------------------------------------------------- */
+/* PODIUM VIEW (JUARA 3 BESAR) */
+/* ------------------------------------------------------------- */
+.podium-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin-top: 10px;
+}
+
+.podium-stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.podium-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.podium-player-card {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.crown-badge {
+  position: absolute;
+  top: -38px;
+  animation: floatCrown 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes floatCrown {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+.podium-avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.85);
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  padding: 4px;
+}
+
+.podium-avatar.rank-1 {
+  width: 105px;
+  height: 105px;
+  border-color: #f1c40f;
+  border-width: 4px;
+}
+
+.podium-name {
+  font-size: 12px;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000;
+  margin-top: 6px;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.podium-score {
+  font-size: 11px;
+  color: #f1c40f;
+  text-shadow: 2px 2px 0 #000;
+  margin-top: 2px;
+}
+
+.podium-pillar {
+  width: 130px;
+  border: 4px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.podium-pillar.rank-1 {
+  height: 170px;
+  background: linear-gradient(180deg, #f1c40f 0%, #d4ac0d 100%);
+}
+
+.podium-pillar.rank-2 {
+  height: 125px;
+  background: linear-gradient(180deg, #bdc3c7 0%, #95a5a6 100%);
+}
+
+.podium-pillar.rank-3 {
+  height: 90px;
+  background: linear-gradient(180deg, #d35400 0%, #ba4a00 100%);
+}
+
+/* Runner ups table (Rank 4+) */
+.runner-ups-box {
+  background: rgba(0, 0, 0, 0.65);
+  border: 4px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  padding: 14px 20px;
+  max-width: 650px;
+  width: 100%;
+}
+
+/* ======================================================== */
+/* ANIMASI PEMBUKAAN PODIUM SATU PER SATU                   */
+/* ======================================================== */
+.podium-hidden {
+  opacity: 0 !important;
+  transform: translateY(120px) scale(0.9) !important;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.podium-rise {
+  visibility: visible !important;
+  animation: podiumRiseBounce 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+  pointer-events: auto !important;
+}
+
+@keyframes podiumRiseBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(120px) scale(0.85);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1.05);
+  }
+  85% {
+    transform: translateY(6px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.runner-ups-hidden {
+  opacity: 0 !important;
+  transform: translateY(40px) !important;
+  visibility: hidden;
+}
+
+.runner-ups-visible {
+  visibility: visible !important;
+  animation: runnerUpsSlideUp 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) forwards !important;
+}
+
+@keyframes runnerUpsSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.runner-row-item {
+  animation: rowAppear 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes rowAppear {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

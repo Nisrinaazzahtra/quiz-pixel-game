@@ -1,0 +1,14 @@
+{
+  "name": "quiz-pixel-game",
+  "version": "1.0.0",
+  "description": "Multiplayer Pixel Art Classroom Quiz Game",
+  "main": "server/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.3",
+    "socket.io": "^4.8.4"
+  }
+}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Player - Quiz Pixel</title>
+  <link rel="stylesheet" href="/player/player.css" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Fixed Background (PNG stays permanent when scrolling) -->
+  <div id="playerBg" class="fixed-bg" style="background-image: url('/assets/images/backgrounds/bg_home.png');"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="player-app-viewport">
+    <!-- ======================================================== -->
+    <!-- PERMANENT TOP HUD HEADER (TAMPILAN PERMANEN)            -->
+    <!-- ======================================================== -->
+    <header id="permanentHud" class="permanent-hud" style="display: none;">
+      <div class="hud-profile-group">
+        <div class="hud-avatar-box">
+          <img id="hudAvatarImg" class="hud-avatar-img" src="/assets/images/characters/male/male_1.png" alt="Avatar" />
+        </div>
+        <div class="hud-info-list">
+          <div id="hudPlayerName" class="hud-name">NAME</div>
+          <div id="hudPlayerScore" class="hud-score">SCORE: 0</div>
+          <div class="hud-hearts-row" id="hudHeartsRow">
+            <!-- 3 Heart icons di awal permainan -->
+            <img class="hud-heart-icon" src="/assets/images/icons/heart.svg" />
+            <img class="hud-heart-icon" src="/assets/images/icons/heart.svg" />
+            <img class="hud-heart-icon" src="/assets/images/icons/heart.svg" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Action / Icon Bantuan di sebelah kanan -->
+      <div class="hud-action-group">
+        <!-- Normal Lifeline Bulb -->
+        <div id="hudHelpWrapper" style="display: flex; flex-direction: column; align-items: center;">
+          <button id="btnRequestHelp" class="hud-help-btn" title="Bantuan 50:50">
+            <img class="hud-help-icon" src="/assets/images/icons/bulb.svg" alt="Bantuan" />
+          </button>
+          <span id="hudHelpCounter" class="hud-help-counter">0/3</span>
+        </div>
+
+        <!-- Skull Tag (Hanya muncul di Layar Gugur) -->
+        <img id="hudSkullTag" class="skull-tag" src="/assets/images/icons/skull.svg" alt="Gugur" style="display: none;" />
+      </div>
+    </header>
+
+    <!-- ======================================================== -->
+    <!-- SCROLLABLE BODY                                          -->
+    <!-- ======================================================== -->
+    <main class="scrollable-body" id="scrollableBody">
+
+      <!-- STEP 1: MASUKKAN NAMA PEMAIN -->
+      <section id="stepName" class="pixel-box" style="width: 100%; max-width: 360px; margin-top: 80px; text-align: center;">
+        <h2 style="font-size: 15px; margin-bottom: 16px;">MASUKKAN NAMA</h2>
+        <input 
+          type="text" 
+          id="playerNameInput" 
+          class="pixel-input" 
+          placeholder="NAMA KAMU" 
+          maxlength="15"
+          autocomplete="off"
+        />
+        <button id="btnSubmitName" class="pixel-btn yellow" style="width: 100%; margin-top: 16px;">
+          LANJUT
+        </button>
+      </section>
+
+      <!-- STEP 2: PILIH GENDER -->
+      <section id="stepGender" class="pixel-box" style="display: none; width: 100%; max-width: 360px; margin-top: 80px; text-align: center;">
+        <h2 style="font-size: 15px; margin-bottom: 20px;">PILIH GENDER</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <button id="btnSelectMale" class="pixel-btn blue" style="font-size: 16px; padding: 18px;">
+            ♂ MALE
+          </button>
+          <button id="btnSelectFemale" class="pixel-btn" style="font-size: 16px; padding: 18px; background: #ff7597; color: #fff;">
+            ♀ FEMALE
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 3: PILIH & KUNCI KARAKTER (20 KARAKTER EKSKLUSIF) -->
+      <section id="stepCharSelect" style="display: none; width: 100%; text-align: center; margin-top: 20px;">
+        <div class="pixel-box" style="margin-bottom: 14px; padding: 10px;">
+          <h3 style="font-size: 13px;">PILIH KARAKTERMU (1 DARI 20)</h3>
+          <p style="font-size: 9px; color: #555; margin-top: 4px;">Karakter yang dipilih tidak dapat dipakai pemain lain!</p>
+        </div>
+
+        <div id="charGrid" class="char-grid">
+          <!-- 20 characters injected here -->
+        </div>
+
+        <button id="btnLockCharacter" class="pixel-btn yellow" style="width: 100%; font-size: 14px;" disabled>
+          KUNCI KARAKTER
+        </button>
+      </section>
+
+      <!-- STEP 4: RUANG TUNGGU PEMAIN -->
+      <section id="stepWaitingRoom" class="pixel-box" style="display: none; width: 100%; max-width: 380px; margin-top: 80px; text-align: center;">
+        <h2 style="font-size: 14px; margin-bottom: 16px;">RUANG TUNGGU</h2>
+        <div style="margin: 20px 0;">
+          <img id="waitingAvatarImg" src="" style="width: 100px; height: 100px; object-fit: contain; border: 3px solid #000; background: #fff;" />
+          <div id="waitingCharName" style="font-size: 12px; margin-top: 8px; font-weight: bold;">Karakter</div>
+        </div>
+        <p style="font-size: 11px; line-height: 1.6; color: #2c3e50; animation: blinkText 1.5s infinite;">
+          Menunggu Host memulai permainan...
+        </p>
+      </section>
+
+      <!-- STEP 5: QUIZ SCREEN (REFERENSI 4) -->
+      <section id="stepQuiz" style="display: none; width: 100%;">
+        <div class="quiz-timer-bar">
+          <div id="quizTimerFill" class="quiz-timer-fill"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #fff; text-shadow: 1px 1px 0 #000; margin-bottom: 8px;">
+          <span id="questionCounter">Soal 1 / 10</span>
+          <span id="timerText">60s</span>
+        </div>
+
+        <!-- Kartu Soal -->
+        <div class="quiz-card">
+          <div id="questionText" class="quiz-question-text">
+            MEMUAT SOAL...
+          </div>
+        </div>
+
+        <!-- 4 Opsi Jawaban Vertikal -->
+        <div class="quiz-answers-list" id="answersList">
+          <button class="pixel-btn answer-btn" data-index="0">Opsi 1</button>
+          <button class="pixel-btn answer-btn" data-index="1">Opsi 2</button>
+          <button class="pixel-btn answer-btn" data-index="2">Opsi 3</button>
+          <button class="pixel-btn answer-btn" data-index="3">Opsi 4</button>
+        </div>
+      </section>
+
+      <!-- STEP 6: NYAWA HABIS (REFERENSI 5) -->
+      <section id="stepOutOfHearts" class="out-of-hearts-box" style="display: none;">
+        <h2 class="death-title">NYAWAMU TELAH HABIS !!</h2>
+        <p id="deathSubtitle" class="death-subtitle">KLIK PADA SALAH SATU KOLOM DIBAWAH INI</p>
+
+        <div style="display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 360px;">
+          <!-- Kotak Kuning Kesempatan Kembali -->
+          <button id="btnChanceRevive" class="pixel-btn yellow" style="font-size: 13px; padding: 18px;">
+            KESEMPATAN KEMBALI
+          </button>
+          <!-- Kotak Merah Menyerah -->
+          <button id="btnGiveUp" class="pixel-btn red" style="font-size: 13px; padding: 18px;">
+            MENYERAH
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 7: ESSAY SUBMISSION (KESEMPATAN KEMBALI) -->
+      <section id="stepEssayForm" class="pixel-box" style="display: none; width: 100%; max-width: 380px; margin-top: 30px; text-align: center;">
+        <h3 style="font-size: 13px; margin-bottom: 8px;">TANTANGAN ESSAY</h3>
+        <p style="font-size: 11px; color: #27ae60; margin-bottom: 12px; font-weight: bold;">
+          ✨ Kerjakanlah untuk mendapat persetujuan Host dan hidup kembali dengan 1 hati!
+        </p>
+        <p style="font-size: 11px; line-height: 1.5; margin-bottom: 14px; text-align: left;">
+          Buat satu kalimat diksi atau paragraf ilmiah !!
+        </p>
+        <textarea 
+          id="essayTextInput" 
+          rows="4" 
+          class="pixel-input" 
+          style="text-align: left; resize: none; font-family: var(--font-silk); font-size: 13px; line-height: 1.5;"
+          placeholder="Tulis kalimatmu di sini..."
+        ></textarea>
+        <button id="btnSubmitEssay" class="pixel-btn green" style="width: 100%; margin-top: 14px;">
+          KIRIM KE HOST
+        </button>
+        <div id="essayWaitMsg" style="display: none; margin-top: 14px; font-size: 11px; color: #2980b9; animation: blinkText 1.5s infinite;">
+          Menunggu verifikasi dari Host...
+        </div>
+      </section>
+
+      <!-- STEP 8: LAYAR GUGUR (TERELIMINASI) -->
+      <section id="stepEliminated" class="pixel-box" style="display: none; width: 100%; max-width: 380px; margin-top: 60px; text-align: center;">
+        <img src="/assets/images/icons/skull.svg" style="width: 60px; height: 60px; margin-bottom: 12px;" />
+        <h2 style="font-size: 16px; color: #c0392b; margin-bottom: 10px;">KAMU TELAH GUGUR</h2>
+        <p style="font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 16px;">
+          Nyawamu telah habis dan kamu tidak dapat melanjutkan kuis.
+        </p>
+        <div style="font-size: 13px; font-weight: bold; padding: 12px; background: #eef2f3; border: 2px solid #000;">
+          Skor Akhir: <span id="finalDeadScore">0</span> pts
+        </div>
+      </section>
+
+      <!-- STEP 9: LAYAR SELESAI (10 SOAL LULUS) -->
+      <section id="stepFinished" class="pixel-box" style="display: none; width: 100%; max-width: 380px; margin-top: 60px; text-align: center;">
+        <div style="font-size: 40px; margin-bottom: 10px;">🎉</div>
+        <h2 style="font-size: 15px; color: #27ae60; margin-bottom: 12px;">KUIS SELESAI!</h2>
+        <p style="font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 16px;">
+          Kamu berhasil menjawab seluruh 10 soal!
+        </p>
+        <div style="font-size: 14px; font-weight: bold; padding: 14px; background: #fdf2e9; border: 3px solid #000; margin-bottom: 16px;">
+          Skor Akhir: <span id="finalSuccessScore">0</span> pts
+        </div>
+        <p style="font-size: 10px; color: #888;">
+          Lihat layar utama Host untuk pengumuman podium juara!
+        </p>
+      </section>
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- MODAL BANTUAN MATEMATIKA PERKALIAN                        -->
+    <!-- ======================================================== -->
+    <div id="mathModal" class="modal-overlay" style="display: none;">
+      <div class="pixel-box modal-content" style="text-align: center;">
+        <h3 style="font-size: 13px; margin-bottom: 8px;">TANTANGAN BANTUAN</h3>
+        <p style="font-size: 10px; color: #555; line-height: 1.5; margin-bottom: 12px;">
+          Jawab soal matematika berikut untuk mengeliminasi 2 jawaban salah:
+        </p>
+        
+        <div id="mathQuestionText" style="font-size: 24px; font-weight: bold; color: #2980b9; margin-bottom: 14px;">
+          ? × ? = ?
+        </div>
+
+        <input 
+          type="number" 
+          id="mathAnswerInput" 
+          class="pixel-input" 
+          placeholder="Jawaban" 
+          style="font-size: 18px; margin-bottom: 12px;"
+        />
+        <div id="mathErrorMsg" class="error-msg" style="margin-bottom: 10px;"></div>
+
+        <div style="display: flex; gap: 10px;">
+          <button id="btnCancelMath" class="pixel-btn red" style="flex: 1; font-size: 11px;">Batal</button>
+          <button id="btnSubmitMath" class="pixel-btn green" style="flex: 1; font-size: 11px;">Kirim</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/player/player.js"></script>
+</body>
+</html>

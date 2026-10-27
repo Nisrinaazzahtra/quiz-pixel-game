@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Host Dashboard - Quiz Pixel</title>
+  <link rel="stylesheet" href="/host/host.css" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Fixed Background as requested: PNG stays permanent when scrolling -->
+  <div id="hostBg" class="fixed-bg" style="background-image: url('/assets/images/backgrounds/bg_host_waiting.png');"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="host-container">
+    <!-- ======================================================== -->
+    <!-- VIEW 1: WAITING ROOM -->
+    <!-- ======================================================== -->
+    <div id="waitingRoomView" style="display: flex; flex-direction: column; flex: 1;">
+      <div class="host-header">
+        <div id="playerCountBadge" class="player-count-badge">0/30</div>
+        <div class="waiting-banner">WAITING ROOM</div>
+        <div style="width: 80px;"></div>
+      </div>
+
+      <div style="text-align: center;">
+        <div class="code-box">
+          <span style="font-size: 16px; display: block; color: #555; margin-bottom: 4px;">KODE ROOM</span>
+          <span id="roomCodeDisplay">----</span>
+        </div>
+      </div>
+
+      <div id="playersGrid" class="players-grid">
+        <!-- Player cards dynamically injected here -->
+      </div>
+
+      <div class="waiting-footer">
+        <div class="waiting-text">MENUNGGU PEMAIN...</div>
+        <button id="btnStartGame" class="pixel-btn yellow" style="font-size: 18px; padding: 16px 40px;">
+          START
+        </button>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 2: IN-GAME DASHBOARD & ESSAY REVIEW -->
+    <!-- ======================================================== -->
+    <div id="inGameView" style="display: none; flex-direction: column; flex: 1;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 class="game-header-title">GAME SEDANG BERLANGSUNG . . .</h2>
+        <button id="btnTogglePodium" class="pixel-btn yellow" style="font-size: 12px; padding: 10px 18px;">
+          🏆 LIHAT PODIUM
+        </button>
+      </div>
+
+      <div class="in-game-layout">
+        <!-- Left: Live Scoreboard Table -->
+        <div class="scoreboard-box">
+          <div class="scoreboard-table-header">
+            <span>NAME</span>
+            <span>SCORE</span>
+          </div>
+          <div id="scoreboardList" class="scoreboard-list">
+            <!-- Dynamic player score rows -->
+          </div>
+        </div>
+
+        <!-- Right: Essay Review Box -->
+        <div class="essay-panel">
+          <div class="essay-header">
+            <span>KOREKSI ESSAY</span>
+            <span id="essayQueueBadge" style="font-size: 10px; background: #000; color: #fff; padding: 4px 8px; border-radius: 4px;">0 Menunggu</span>
+          </div>
+
+          <!-- Tab / Pill Antrian Essay jika ada beberapa siswa -->
+          <div id="essayPillsBar" class="essay-pills-bar" style="display: none;"></div>
+
+          <!-- Kotak Konten Essay -->
+          <div id="essayContentBox" class="essay-content-box">
+            <div id="noEssayNotice" style="color: #777; font-size: 11px; text-align: center; margin: auto 0;">
+              Belum ada jawaban essay dari pemain yang gugur.
+            </div>
+          </div>
+
+          <!-- Tombol Merah (Tolak) dan Biru Cyan (Terima) DI BAGIAN BAWAH PERSIS SEPERTI DESAIN -->
+          <div class="essay-bottom-actions">
+            <button id="btnHostRejectEssay" class="essay-btn-reject" disabled>
+              ✖ Tolak (Gugur)
+            </button>
+            <button id="btnHostApproveEssay" class="essay-btn-approve" disabled>
+              ✔ Terima (Hidupkan)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 3: PODIUM 3 BESAR -->
+    <!-- ======================================================== -->
+    <div id="podiumView" style="display: none; flex-direction: column; flex: 1; position: relative;">
+      <!-- Canvas Confetti Halus Bertema Retro Pixel -->
+      <canvas id="confettiCanvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 100; display: none;"></canvas>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; z-index: 101;">
+        <h2 class="game-header-title">🏆 PODIUM JUARA</h2>
+        <div style="display: flex; gap: 10px;">
+          <button id="btnReplayPodium" class="pixel-btn yellow" style="font-size: 11px; padding: 10px 14px;">
+            ↺ ULANG ANIMASI
+          </button>
+          <button id="btnBackToScoreboard" class="pixel-btn cyan" style="font-size: 12px; padding: 10px 18px;">
+            📋 PAPAN SKOR
+          </button>
+        </div>
+      </div>
+
+      <div class="podium-section">
+        <div class="podium-stage">
+          <!-- JUARA 3 (Sebelah Kiri) -->
+          <div id="podiumCol3" class="podium-column">
+            <div id="podiumRank3Card" class="podium-player-card">
+              <img id="podiumRank3Img" class="podium-avatar" src="/assets/images/characters/male/male_1.png" alt="Juara 3" />
+              <div id="podiumRank3Name" class="podium-name">Player 3</div>
+              <div id="podiumRank3Score" class="podium-score">0 pts</div>
+            </div>
+            <div class="podium-pillar rank-3">3</div>
+          </div>
+
+          <!-- JUARA 1 (Di Tengah dengan Mahkota) -->
+          <div id="podiumCol1" class="podium-column">
+            <div id="podiumRank1Card" class="podium-player-card">
+              <img class="crown-badge" src="/assets/images/icons/crown.svg" alt="Mahkota" />
+              <img id="podiumRank1Img" class="podium-avatar rank-1" src="/assets/images/characters/male/male_2.png" alt="Juara 1" />
+              <div id="podiumRank1Name" class="podium-name" style="font-size: 14px; font-weight: bold;">Juara 1</div>
+              <div id="podiumRank1Score" class="podium-score" style="font-size: 13px;">0 pts</div>
+            </div>
+            <div class="podium-pillar rank-1">1</div>
+          </div>
+
+          <!-- JUARA 2 (Sebelah Kanan) -->
+          <div id="podiumCol2" class="podium-column">
+            <div id="podiumRank2Card" class="podium-player-card">
+              <img id="podiumRank2Img" class="podium-avatar" src="/assets/images/characters/female/female_1.png" alt="Juara 2" />
+              <div id="podiumRank2Name" class="podium-name">Player 2</div>
+              <div id="podiumRank2Score" class="podium-score">0 pts</div>
+            </div>
+            <div class="podium-pillar rank-2">2</div>
+          </div>
+        </div>
+
+        <!-- Peringkat 4 ke Bawah (Nama dan Skor Saja) -->
+        <div id="runnerUpsBox" class="runner-ups-box">
+          <div style="color: #ffffff; font-size: 12px; margin-bottom: 10px; text-shadow: 2px 2px 0 #000; text-align: center;">
+            PERINGKAT LAINNYA
+          </div>
+          <div id="runnerUpsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto;">
+            <!-- Rank 4+ items injected dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/host/host.js"></script>
+</body>
+</html>

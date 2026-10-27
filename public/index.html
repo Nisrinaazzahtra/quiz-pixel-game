@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Quiz Bahasa Indonesia - Pixel Edition</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    .home-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .title-banner {
+      margin-bottom: 40px;
+    }
+
+    .main-title {
+      font-size: clamp(38px, 9vw, 68px);
+      color: #ffffff;
+      text-shadow: 
+        -4px -4px 0 #000,  
+         4px -4px 0 #000,
+        -4px  4px 0 #000,
+         4px  4px 0 #000,
+         0px  8px 0 rgba(0,0,0,0.6);
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .sub-title {
+      font-size: clamp(14px, 3.8vw, 24px);
+      color: #ffffff;
+      text-shadow: 
+        -3px -3px 0 #000,  
+         3px -3px 0 #000,
+        -3px  3px 0 #000,
+         3px  3px 0 #000,
+         0px  5px 0 rgba(0,0,0,0.5);
+      letter-spacing: 2px;
+    }
+
+    .action-group {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .create-btn-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .create-btn {
+      width: 100%;
+      border-radius: 40px;
+      font-size: 16px;
+      padding: 16px 20px;
+      background: #eef2dc;
+      box-shadow: 0 6px 0 #333333;
+    }
+
+    .sparkle-icon {
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      color: #f1c40f;
+      font-size: 20px;
+      text-shadow: 2px 2px 0 #000;
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); }
+      100% { transform: scale(1.2); }
+    }
+
+    .redeem-card {
+      width: 100%;
+      background: rgba(220, 230, 218, 0.95);
+      border: 4px solid #1a1a1a;
+      border-radius: 30px;
+      padding: 24px 20px;
+      box-shadow: 0 8px 0 #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .redeem-input {
+      border-radius: 24px;
+      font-size: 16px;
+      padding: 14px;
+      background: #cad4cb;
+      border: 3px solid #1a1a1a;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .redeem-input::placeholder {
+      color: #6c786d;
+    }
+
+    .start-btn {
+      border-radius: 12px;
+      background: #dec7b3;
+      font-size: 16px;
+      padding: 14px;
+      box-shadow: 0 5px 0 #5a4f47;
+    }
+
+    /* Modal PIN Host */
+    .pin-input {
+      letter-spacing: 8px;
+      font-size: 22px;
+      margin: 16px 0;
+    }
+
+    .error-msg {
+      color: #ff3333;
+      font-size: 11px;
+      margin-top: 8px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Background as requested: PNG stays permanent when scrolling -->
+  <div class="fixed-bg" style="background-image: url('/assets/images/backgrounds/bg_home.png');"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="home-container">
+    <div class="title-banner">
+      <h1 class="main-title">QUIZ</h1>
+      <h2 class="sub-title">BAHASA INDONESIA</h2>
+    </div>
+
+    <div class="action-group">
+      <!-- Tombol Buat Room untuk Host -->
+      <div class="create-btn-wrapper">
+        <button id="btnOpenHostModal" class="pixel-btn create-btn">
+          BUAT KODE
+        </button>
+        <span class="sparkle-icon">✦</span>
+      </div>
+
+      <!-- Kartu Masukkan Kode untuk Player -->
+      <div class="redeem-card">
+        <input 
+          type="text" 
+          id="playerRoomCode" 
+          class="pixel-input redeem-input" 
+          placeholder="KODE ROOM" 
+          maxlength="6"
+          autocomplete="off"
+        />
+        <button id="btnPlayerJoin" class="pixel-btn start-btn">
+          Start
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal PIN Host -->
+  <div id="hostPinModal" class="modal-overlay" style="display: none;">
+    <div class="pixel-box modal-content" style="text-align: center;">
+      <h3 style="font-size: 14px; margin-bottom: 12px;">MASUKKAN PIN HOST</h3>
+      <p style="font-size: 10px; color: #555; line-height: 1.5;">Hanya yang mengetahui PIN yang dapat membuat ruangan kuis.</p>
+      
+      <input 
+        type="password" 
+        id="hostPinInput" 
+        class="pixel-input pin-input" 
+        placeholder="PIN" 
+        maxlength="10"
+      />
+      <div id="hostPinError" class="error-msg">PIN salah! Silakan coba lagi.</div>
+
+      <div style="display: flex; gap: 10px; margin-top: 16px;">
+        <button id="btnCancelHostModal" class="pixel-btn red" style="flex: 1; font-size: 12px;">Batal</button>
+        <button id="btnConfirmHostPin" class="pixel-btn green" style="flex: 1; font-size: 12px;">Buat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tombol Pengaturan Kenyamanan Visual (Saturasi / Brightness) -->
+  <button id="btnToggleComfort" class="comfort-settings-pill">
+    ⚙️ Atur Layar
+  </button>
+
+  <!-- Modal Pengaturan Layar -->
+  <div id="comfortModal" class="modal-overlay" style="display: none;">
+    <div class="pixel-box modal-content">
+      <h3 style="font-size: 13px; margin-bottom: 16px; text-align: center;">PENGATURAN TAMPILAN</h3>
+      <div style="margin-bottom: 16px; font-size: 11px;">
+        <label for="satRange" style="display: block; margin-bottom: 8px;">Saturasi Warna:</label>
+        <input type="range" id="satRange" min="20" max="100" value="85" style="width: 100%; cursor: pointer;" />
+      </div>
+      <div style="margin-bottom: 20px; font-size: 11px;">
+        <label for="brightRange" style="display: block; margin-bottom: 8px;">Kecerahan Background:</label>
+        <input type="range" id="brightRange" min="40" max="100" value="88" style="width: 100%; cursor: pointer;" />
+      </div>
+      <button id="btnCloseComfort" class="pixel-btn yellow" style="width: 100%; font-size: 12px;">Simpan & Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    const socket = io();
+
+    // Elements
+    const btnOpenHostModal = document.getElementById('btnOpenHostModal');
+    const hostPinModal = document.getElementById('hostPinModal');
+    const btnCancelHostModal = document.getElementById('btnCancelHostModal');
+    const btnConfirmHostPin = document.getElementById('btnConfirmHostPin');
+    const hostPinInput = document.getElementById('hostPinInput');
+    const hostPinError = document.getElementById('hostPinError');
+
+    const playerRoomCode = document.getElementById('playerRoomCode');
+    const btnPlayerJoin = document.getElementById('btnPlayerJoin');
+
+    // Comfort settings
+    const btnToggleComfort = document.getElementById('btnToggleComfort');
+    const comfortModal = document.getElementById('comfortModal');
+    const btnCloseComfort = document.getElementById('btnCloseComfort');
+    const satRange = document.getElementById('satRange');
+    const brightRange = document.getElementById('brightRange');
+
+    // Load saved comfort settings
+    const savedSat = localStorage.getItem('pixel_bg_sat') || '85';
+    const savedBright = localStorage.getItem('pixel_bg_bright') || '88';
+    document.documentElement.style.setProperty('--bg-saturate', (savedSat / 100).toString());
+    document.documentElement.style.setProperty('--bg-brightness', (savedBright / 100).toString());
+    satRange.value = savedSat;
+    brightRange.value = savedBright;
+
+    satRange.addEventListener('input', (e) => {
+      document.documentElement.style.setProperty('--bg-saturate', (e.target.value / 100).toString());
+      localStorage.setItem('pixel_bg_sat', e.target.value);
+    });
+
+    brightRange.addEventListener('input', (e) => {
+      document.documentElement.style.setProperty('--bg-brightness', (e.target.value / 100).toString());
+      localStorage.setItem('pixel_bg_bright', e.target.value);
+    });
+
+    btnToggleComfort.addEventListener('click', () => {
+      comfortModal.style.display = 'flex';
+    });
+    btnCloseComfort.addEventListener('click', () => {
+      comfortModal.style.display = 'none';
+    });
+
+    // Host modal
+    btnOpenHostModal.addEventListener('click', () => {
+      hostPinModal.style.display = 'flex';
+      hostPinInput.value = '';
+      hostPinError.style.display = 'none';
+      hostPinInput.focus();
+    });
+
+    btnCancelHostModal.addEventListener('click', () => {
+      hostPinModal.style.display = 'none';
+    });
+
+    btnConfirmHostPin.addEventListener('click', () => {
+      const pin = hostPinInput.value.trim();
+      socket.emit('createRoom', { pin }, (response) => {
+        if (response.success) {
+          window.location.href = `/host/index.html?code=${response.roomCode}`;
+        } else {
+          hostPinError.textContent = response.message || 'PIN Host salah!';
+          hostPinError.style.display = 'block';
+        }
+      });
+    });
+
+    hostPinInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') btnConfirmHostPin.click();
+    });
+
+    // Player join
+    btnPlayerJoin.addEventListener('click', () => {
+      const code = playerRoomCode.value.trim().toUpperCase();
+      if (!code) {
+        alert('Silakan masukkan Kode Room!');
+        return;
+      }
+      window.location.href = `/player/index.html?code=${code}`;
+    });
+
+    playerRoomCode.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') btnPlayerJoin.click();
+    });
+  </script>
+</body>
+</html>
